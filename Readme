@@ -1,0 +1,31 @@
+SWIM through the NATs
+
+March 31, 2015
+The goal of this project is to implement and evaluate a decentralized
+membership service that provides information about all the the participating
+processes. A membership service can easily be implemented using
+a heatbeat mechanism, where each process periodically sends a ping message
+to all the processes in the system. Failures are detected when a process
+does not responds to the ping message. However, this solution does
+not scale well when the number of processes in the system grow because
+heatbeat based mechanisms requires O(n2) messages in each round.
+The project is split into two phases. In the first phase of the project
+you will implement SWIM: Scalable Weakly-consistent Infection-style
+Group Membership Protocol [1] using Kompics that scales to at least
+hundreds of peers in simulation. In phase two you will modify the system
+to make with work on the Open Internet.
+1 Phase 1: Implementing and Evaluating SWIM
+Warm Up: Ping Pong
+The bootstrap mechanism provides a small subset of existing peers in the
+system. A new peer injects information about itself by randomly pinging one
+of the peers provided by the bootstrap server. Implement a basic ping pong
+mechanism. Select a random peer from the list of alive nodes and send a ping
+message. When a peer receives a ping message it responds back with a pong
+message. Using the log messages make sure that the ping mechanism is working.
+Task 1: Membership discovery
+In this task you will implement the piggybacking mechanism to disseminate
+information about new peers in the system. In the pong messages the peers
+piggyback information about the changes (new/dead/suspected peers) in the
+system. Upon receiving the pong message the new information is merged with
+the local state stored in one or more local lists.
+The authors recommend exchanging the new information 
