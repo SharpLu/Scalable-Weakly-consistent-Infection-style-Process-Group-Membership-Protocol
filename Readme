@@ -1,31 +1,11 @@
-SWIM through the NATs
+SWIM assumes that there is direct connection between any two peers in the system. Some studies have shown that up to 80% of the peers in the peer-to- peer overlays on the Internet are behind NATs and firewalls. Network Address Translation (NAT) gateways enable many machines to share a small number of public IP addresses, but at the cost of preventing external hosts from directly connecting to hosts behind the NAT.
 
-March 31, 2015
-The goal of this project is to implement and evaluate a decentralized
-membership service that provides information about all the the participating
-processes. A membership service can easily be implemented using
-a heatbeat mechanism, where each process periodically sends a ping message
-to all the processes in the system. Failures are detected when a process
-does not responds to the ping message. However, this solution does
-not scale well when the number of processes in the system grow because
-heatbeat based mechanisms requires O(n2) messages in each round.
-The project is split into two phases. In the first phase of the project
-you will implement SWIM: Scalable Weakly-consistent Infection-style
-Group Membership Protocol [1] using Kompics that scales to at least
-hundreds of peers in simulation. In phase two you will modify the system
-to make with work on the Open Internet.
-1 Phase 1: Implementing and Evaluating SWIM
-Warm Up: Ping Pong
-The bootstrap mechanism provides a small subset of existing peers in the
-system. A new peer injects information about itself by randomly pinging one
-of the peers provided by the bootstrap server. Implement a basic ping pong
-mechanism. Select a random peer from the list of alive nodes and send a ping
-message. When a peer receives a ping message it responds back with a pong
-message. Using the log messages make sure that the ping mechanism is working.
-Task 1: Membership discovery
-In this task you will implement the piggybacking mechanism to disseminate
-information about new peers in the system. In the pong messages the peers
-piggyback information about the changes (new/dead/suspected peers) in the
-system. Upon receiving the pong message the new information is merged with
-the local state stored in one or more local lists.
-The authors recommend exchanging the new information 
+In the rest of the document open peers refers to peers that have public IP and they are accessible by any peer in the system. A natted peer is behind a NAT device and it is not directly visible to the peers on the Internet. Your next task is to run SWIM on the Open Internet where some peers are behind NAT devices. Two popular mechanisms to overcome this problem are Hole Punching and Message Relaying. These mechanisms will be discussed in detail in the following lectures. Due to time limitations you will not implement hole punching mechanisms and rely solely on message relaying to communicate with the natted peers.
+
+Up till now all the peers in the system were open i.e. all the peers could com- municate with each other. In the remaining tasks you will start the system with both open and natted peers. You have been provided a simple NatTraverser layer that hides the complexities of the communicating with natted peers. When a natted peer is started it selects a random open peer as its relay server. When any node wants to send a message to a natted peer the NatTraverser layer for- wards the message to the relay server for the natted peer, and the relay server forwards the message to the natted peer.
+
+
+The problem with the current implementation is that the when an open peer dies then all the natted peers that were using the open peer as a relay are disconnected. In this task you will fix this problem by adding the support for multiple relay servers. You will implement the following
+3 Connect and Start Croupier component. Croupier [2] is a peer sampling service that provides random samples of open and natted peers in they system.
+The N atT raverser layer periodically send heart beats to the relay servers. When it detects that a relay server is dead then it selects a new open peer provided by Croupier as the relay server. The information about the new relay server needs to be disseminated to all the peers in the system.
+The NatTraverser layer notifies the SWIM layer about the changes in the list of relay servers. The SWIM component injects the new updated address information in the system.
